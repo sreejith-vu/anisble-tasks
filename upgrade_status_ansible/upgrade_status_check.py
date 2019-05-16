@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # Description	:	This script will check daily instahms upgrade status and report to slack 
-#                       channel #insta_upgrade_status if there is any failure/delay in upgrade.
+#                       channel #XXXXXXXXX if there is any failure/delay in upgrade.
 
 import os
 import sys
@@ -13,8 +13,7 @@ from os import environ, path
 
 UPGRADE_LIST = "/opt/custom_scripts/upgrade_list.txt"
 PLAY_PATH = "/home/sreejith.vu/upgrade_status_ansible/"
-WEBHOOK_URL = 'https://hooks.slack.com/services/T024PSVLF/BGFUMCBRA/'\
-              'f55cut16ZEpA3TUEN3ciC6jN'
+WEBHOOK_URL = 'XXXXXXXXXXXXXXXXXXXXXX'
 
 logFormatter = '%(asctime)s - %(levelname)s - %(message)s'
 logging.basicConfig(filename="/tmp/upgrade/instahms_upgrade.log", format=logFormatter)
@@ -27,7 +26,7 @@ def to_slack(playbook_vars, msg):
         server = playbook_vars["server"]
         upgrade_date = playbook_vars["upgrade_date"]
         DATA = {
-            'channel': '#insta_upgrade_status',
+            'channel': '#XXXXXXXXXXX',
             'text': '```ERROR : Server : '+server+' : '+msg+'```',
             'username': 'InstaHMS ['+upgrade_date+'] Upgrade Status',
             'icon_emoji': ':skull_and_crossbones:'

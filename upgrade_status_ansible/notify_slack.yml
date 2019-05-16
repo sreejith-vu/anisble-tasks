@@ -13,9 +13,9 @@
   - name: Send notification message via Slack
     block:
     - slack:
-        token: T024PSVLF/BGFUMCBRA/f55cut16ZEpA3TUEN3ciC6jN
+        token: XXXXXX/XXXX/XXXXXXXXXXXXXXXXXXXXXX
         msg: '```{{ error_msg.stdout }}```'
-        channel: '#insta_upgrade_status'
+        channel: '#XXXXXXXXXXXXXXXXXX'
         username: 'Liquibase error on {{ inventory_hostname }}'
         icon_emoji: ":skull_and_crossbones:"
     - lineinfile:
