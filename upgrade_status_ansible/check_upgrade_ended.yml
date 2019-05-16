@@ -1,0 +1,7 @@
+---
+- hosts: "{{ server }}"
+  tasks:
+  - name: Checking upgrade end condition
+    shell: grep {{ upgrade_date }} /var/log/insta/hms/upgrade.log | grep "Upgrade end" |wc -l
+    register: end_upgrade
+    failed_when: end_upgrade.stdout|int == 0

@@ -1,0 +1,7 @@
+---
+- hosts: "{{ server }}"
+  tasks:
+  - name: Checking upgrade begin condition
+    shell: grep {{ upgrade_date }} /var/log/insta/hms/upgrade.log | grep -c "Attempting upgrade to {{ proposed_version }}"
+    register: begin_upgrade
+    failed_when: begin_upgrade.stdout|int < 1|int

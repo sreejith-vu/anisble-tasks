@@ -1,0 +1,17 @@
+---
+- hosts: "{{ server }}"
+  tasks:
+  - name: Checking Upgrade Start Time
+    shell: date +%s -d $(grep {{ upgrade_date }} /var/log/insta/hms/upgrade.log |head -1 |awk '{print $2}' | awk '{print substr($1, 1, length($1)-1)}')
+    register: upgrade_start_time
+  - debug:
+      msg: "{{ upgrade_start_time }}"
+  - name: Checking Current Time
+    shell: date +%s -d $(date +"%H:%M:%S")
+    register: current_time
+  - debug:
+      msg: "{{ current_time }}"
+  - name: Checking time difference
+    debug:
+      msg: "{{ current_time.stdout|int - upgrade_start_time.stdout|int }}"
+    failed_when: (current_time.stdout|int - upgrade_start_time.stdout|int) / 3600|int > {{ time_limit }}|int

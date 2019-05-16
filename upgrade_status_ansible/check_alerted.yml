@@ -1,0 +1,9 @@
+---
+- hosts: hub
+  tasks:
+# playbook will fail if the schema is not found in /tmp/alert_status.txt so the script will send alert to slack.
+  - name: Getting data from alert_status.txt
+    shell: grep -c {{ upgrade_date }}.{{ schema }}.{{ alert }}.notified  /tmp/upgrade/alert_status.txt
+    register: occurence
+  - debug:
+      msg: "{{ occurence.stdout }}"

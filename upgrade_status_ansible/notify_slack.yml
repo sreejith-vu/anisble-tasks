@@ -1,0 +1,25 @@
+  - name: Getting error message from log file
+    shell: awk '/Liquibase Updating schema:{{ error_schema }}/,/Liquibase update FAILED for schema:{{ error_schema }}/' /var/log/insta/hms/liquibase.log 
+    register: error_msg
+  - debug: var=error_msg
+  - name: Ensure not alerted
+    lineinfile:
+      dest: /tmp/upgrade/alert_status.txt
+      line: "{{ upgrade_date }}.{{ error_schema }}.{{ alert }}.notified"
+    check_mode: yes
+    register: presence 
+    delegate_to: hub
+
+  - name: Send notification message via Slack
+    block:
+    - slack:
+        token: T024PSVLF/BGFUMCBRA/f55cut16ZEpA3TUEN3ciC6jN
+        msg: '```{{ error_msg.stdout }}```'
+        channel: '#insta_upgrade_status'
+        username: 'Liquibase error on {{ inventory_hostname }}'
+        icon_emoji: ":skull_and_crossbones:"
+    - lineinfile:
+        path: /tmp/upgrade/alert_status.txt
+        line: "{{ upgrade_date }}.{{ error_schema }}.{{ alert }}.notified"
+    when: presence.changed 
+    delegate_to: hub 

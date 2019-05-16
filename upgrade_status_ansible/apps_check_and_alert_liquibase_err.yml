@@ -1,0 +1,32 @@
+---
+- hosts: "{{ server }}"
+  tasks:
+
+  - name: Check file if /tmp/{{ upgrade_date }}.{{ server }}.txt exists
+    stat: path=/tmp/{{ upgrade_date }}.{{ server }}.txt
+    register: stat_result
+
+  - name: Saving schemas names into a file
+    file:
+      path: /tmp/{{ upgrade_date }}.{{ server }}.txt
+      state: touch
+  - shell: psql -U postgres -d hms template1 -c "\dn" |grep postgres |awk '{print $1}' | egrep -v '(_old$|_t$|extensions|public)' > /tmp/{{ upgrade_date }}.{{ server }}.txt
+    when: not stat_result.stat.exists 
+
+  - name: Registering all schema names to variable
+    shell: cat /tmp/{{ upgrade_date }}.{{ server }}.txt
+    register: schemas_names
+  - debug: 
+      msg: "{{ schemas_names }}"
+    
+  - name: Check for liquibase errors
+    shell: grep "Liquibase update completed for schema:{{ item }}" /var/log/insta/hms/liquibase.log | wc -l
+    register: op
+    with_items: "{{ schemas_names.stdout_lines }}"
+
+  - name: Alert for error using notify_slack playbook
+    include: notify_slack.yml error_schema="{{item.item}}"
+    loop: "{{ op.results }}"
+    when: item.stdout|int == 0
+    
+

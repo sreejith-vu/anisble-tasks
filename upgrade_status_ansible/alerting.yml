@@ -1,0 +1,5 @@
+---
+- hosts: hub
+  tasks:
+  - name: Update alert status in file
+    shell: echo "{{ upgrade_date }}.{{ schema }}.{{ alert }}.notified" >> /tmp/upgrade/alert_status.txt

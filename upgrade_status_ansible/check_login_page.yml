@@ -1,0 +1,7 @@
+---
+- hosts: "{{ server }}"
+  tasks:
+  - name: Checking login page is loading fine or not
+    uri:
+      url: http://localhost/instahms/loginForm.do
+      return_content: yes

@@ -1,0 +1,10 @@
+---
+- hosts: "{{ server }}"
+  tasks:
+  - name: Checking upgrade begin condition
+    shell: grep {{ liquibase_date }} /var/log/insta/hms/liquibase.log |grep -w "Liquibase update completed for schema:{{ schema }}" | wc -l
+    register: liquibase_update_count
+
+  - name: Alerting using notify_slack playbook
+    include: notify_slack.yml error_schema="{{schema}}"
+    when: liquibase_update_count.stdout|int == 0 
